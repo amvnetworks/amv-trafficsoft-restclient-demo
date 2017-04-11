@@ -1,0 +1,60 @@
+import io.franzbecker.gradle.lombok.task.DelombokTask
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+plugins {
+    id 'io.franzbecker.gradle-lombok' version '1.8'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'io.franzbecker.gradle-lombok'
+
+group = 'org.amv.trafficsoft'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven {
+        url 'https://repo.spring.io/libs-snapshot'
+    }
+}
+
+dependencies {
+    compile 'org.amv.trafficsoft:amv-trafficsoft-rest-client:0.0.4'
+    compile('org.springframework.boot:spring-boot-starter:2.0.0.BUILD-SNAPSHOT') {
+        exclude module: 'spring-boot-starter-logging'
+    }
+
+    compile 'org.slf4j:slf4j-simple:1.7.25'
+    compile 'com.google.guava:guava:21.0'
+    compileOnly 'org.projectlombok:lombok:1.16.16'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test:2.0.0.BUILD-SNAPSHOT'
+}
+
+lombok {
+    version = '1.16.16'
+    sha256 = 'fbf682c7ff113e5187a9c4b4cbd7a8ad782abd8ccff91b9fa7289a4a6aa8c19a'
+}
+
+task delombok(type: DelombokTask, dependsOn: compileJava) {
+    ext.outputDir = file("$buildDir/delombok")
+    outputs.dir(outputDir)
+    sourceSets.main.java.srcDirs.each {
+        inputs.dir(it)
+        args(it, '-d', outputDir)
+    }
+}
+
+task delombokHelp(type: DelombokTask) {
+    args '--help'
+}
