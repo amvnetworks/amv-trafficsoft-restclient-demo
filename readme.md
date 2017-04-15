@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/amvnetworks/amv-trafficsoft-restclient-demo.svg?branch=master)](https://travis-ci.org/amvnetworks/amv-trafficsoft-restclient-demo)
+
 amv-trafficsoft-restclient-demo
 ========
 amv-trafficsoft-restclient-demo is a simple Java demo application to demonstrate 
