@@ -6,7 +6,10 @@ import feign.hystrix.SetterFactory;
 import org.amv.trafficsoft.rest.client.ClientConfig;
 import org.amv.trafficsoft.rest.client.ClientConfig.ConfigurableClientConfig;
 import org.amv.trafficsoft.rest.client.TrafficsoftClients;
+import org.amv.trafficsoft.rest.client.asgregister.AsgRegisterClient;
 import org.amv.trafficsoft.rest.client.xfcd.XfcdClient;
+import org.amv.trafficsoft.restclient.demo.command.AllSeriesAndModelsOfOemRunner;
+import org.amv.trafficsoft.restclient.demo.command.LastDataRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,11 +33,24 @@ public class RestClientDemoConfig {
 
     @Bean
     public CommandLineRunner lastDataRunner() {
-        return new RestClientDemoApplication.LastDataRunner(
+        return new LastDataRunner(
                 xfcdClient(),
                 customerProperties.getContractId(),
                 customerProperties.getVehicleIds()
         );
+    }
+
+    @Bean
+    public CommandLineRunner allSeriesAndModelsOfOemRunner() {
+        return new AllSeriesAndModelsOfOemRunner(
+                asgRegisterClient(),
+                customerProperties.getContractId()
+        );
+    }
+
+    @Bean
+    public AsgRegisterClient asgRegisterClient() {
+        return TrafficsoftClients.asgRegister(asgRegisterClientConfig());
     }
 
     @Bean
@@ -47,6 +63,14 @@ public class RestClientDemoConfig {
         return ClientConfig.BasicAuthImpl.builder()
                 .username(customerProperties.getUsername())
                 .password(customerProperties.getPassword())
+                .build();
+    }
+
+
+    @Bean
+    public ConfigurableClientConfig<AsgRegisterClient> asgRegisterClientConfig() {
+        return TrafficsoftClients.config(AsgRegisterClient.class, this.customerProperties.getBaseUrl(), basicAuth())
+                .setterFactory(setterFactory())
                 .build();
     }
 
