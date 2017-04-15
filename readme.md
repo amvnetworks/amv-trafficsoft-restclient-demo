@@ -24,6 +24,9 @@ See [LastDataRunner.java](src/main/java/org/amv/trafficsoft/restclient/demo/comm
 
 Example of a simple `GetLastData` call which prints the result to console.
 ```
+long contractId = 42;
+List<Long> vehicleIds = ImmutableList.of(1337L, 9001L);
+
 Action1<List<NodeRestDto>> onNext = nodeRestDtos -> {
     log.info("Received Nodes: {}", nodeRestDtos);
 };
@@ -34,15 +37,9 @@ Action0 onComplete = () -> {
     log.info("Completed.");
 };
 
-Scheduler sameThreadExecutor = Schedulers.immediate();
-
-long contractId = 42;
-List<Long> vehicleIds = ImmutableList.of(1L);
 log.info("==================================================");
 this.xfcdClient.getLastData(contractId, vehicleIds)
         .toObservable()
-        .observeOn(sameThreadExecutor)
-        .subscribeOn(sameThreadExecutor)
         .subscribe(onNext, onError, onComplete);
 log.info("==================================================");
 ```
@@ -59,6 +56,8 @@ See [AllSeriesAndModelsOfOemRunner.java](src/main/java/org/amv/trafficsoft/restc
 
 Example of how to fetch all series and models of all oems.
 ```
+long contractId = 42;
+
 Action1<SeriesWithModels> onNext = seriesWithModels -> {
     log.info("Received SeriesWithModels: {}", seriesWithModels);
 };
@@ -68,8 +67,6 @@ Action1<Throwable> onError = error -> {
 Action0 onComplete = () -> {
     log.info("Completed.");
 };
-
-Scheduler sameThreadExecutor = Schedulers.immediate();
 
 // fetch all series of an oem
 Func1<OemRestDto, Observable<SeriesRestDto>> fetchSeriesOfOem = oem -> asgRegisterClient
@@ -87,8 +84,6 @@ Func1<SeriesRestDto, Observable<ModelRestDto>> fetchModelsOfSeries = series -> a
 log.info("==================================================");
 this.asgRegisterClient.getOems(contractId)
         .toObservable()
-        .observeOn(sameThreadExecutor)
-        .subscribeOn(sameThreadExecutor)
         .flatMap(oemResponse -> Observable.from(oemResponse.getOems()))
         .flatMap(fetchSeriesOfOem)
         .flatMap(series -> fetchModelsOfSeries.call(series)
@@ -110,5 +105,6 @@ Example output:
 [main] INFO AllSeriesAndModelsOfOemRunner - Received SeriesWithModels: AllSeriesAndModelsOfOemRunner.SeriesWithModels(series=SeriesRestDto(oemCode=AUDI, seriesCode=A6, name=A6/A7), models=[ModelRestDto(oemCode=AUDI, seriesCode=A6, modelCode=A6C5, name=A6 C5 [4B] (1997/07 - 2005/06)), ModelRestDto(oemCode=AUDI, seriesCode=A6, modelCode=A6C6, name=A6 C6 [4F] (2004/07 - 2011/06)), ...])
 [main] INFO AllSeriesAndModelsOfOemRunner - Received SeriesWithModels: AllSeriesAndModelsOfOemRunner.SeriesWithModels(series=SeriesRestDto(oemCode=AUDI, seriesCode=A8, name=A8), models=[ModelRestDto(oemCode=AUDI, seriesCode=A8, modelCode=A8D4, name=A8 D4 [4H] (2010/07 - ))])
 ...
+[main] INFO AllSeriesAndModelsOfOemRunner - Completed.
 [main] INFO AllSeriesAndModelsOfOemRunner - ==================================================
 ```
