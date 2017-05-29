@@ -11,6 +11,23 @@ accessing the AMV Trafficsoft API with
 ./gradlew clean build
 ```
 
+# run
+Following demo profiles are currently available:
+- get-oems-demo
+- get-last-data-demo
+- get-data-and-confirm-deliveries-demo
+- get-data-and-confirm-deliveries-recursive-demo
+
+The active profile can be specified via `spring.profiles.active` argument:
+```
+./gradlew bootRun -Dspring.profiles.active=get-last-data-demo
+```
+
+Multiple profiles can be active as well:
+```
+./gradlew bootRun -Dspring.profiles.active=my-profile,get-last-data-demo,get-oems-demo
+```
+
 # usage
 The [application.yml](src/main/resources/application.yml) acts as a 
 template for your own configuration parameter.
