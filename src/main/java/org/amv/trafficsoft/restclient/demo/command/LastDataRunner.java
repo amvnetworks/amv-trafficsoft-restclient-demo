@@ -30,7 +30,8 @@ public class LastDataRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Action1<List<NodeRestDto>> onNext = nodeRestDtos -> {
-            log.info("Received Nodes: {}", nodeRestDtos);
+            log.info("Received Nodes Amount: {}", nodeRestDtos.size());
+            nodeRestDtos.forEach(node -> log.info("Received Node: {}", node));
         };
         Action1<Throwable> onError = error -> {
             log.error("{}", error);

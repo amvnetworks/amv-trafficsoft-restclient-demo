@@ -9,14 +9,18 @@ import org.amv.trafficsoft.rest.client.TrafficsoftClients;
 import org.amv.trafficsoft.rest.client.asgregister.AsgRegisterClient;
 import org.amv.trafficsoft.rest.client.xfcd.XfcdClient;
 import org.amv.trafficsoft.restclient.demo.command.AllSeriesAndModelsOfOemRunner;
+import org.amv.trafficsoft.restclient.demo.command.GetDataAndConfirmDeliveriesRecursiveRunner;
+import org.amv.trafficsoft.restclient.demo.command.GetDataAndConfirmDeliveriesRunner;
 import org.amv.trafficsoft.restclient.demo.command.LastDataRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import static com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE;
+import static com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy.THREAD;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -32,6 +36,7 @@ public class RestClientDemoConfig {
     }
 
     @Bean
+    @Profile("get-last-data-demo")
     public CommandLineRunner lastDataRunner() {
         return new LastDataRunner(
                 xfcdClient(),
@@ -41,9 +46,28 @@ public class RestClientDemoConfig {
     }
 
     @Bean
+    @Profile("get-oems-demo")
     public CommandLineRunner allSeriesAndModelsOfOemRunner() {
         return new AllSeriesAndModelsOfOemRunner(
                 asgRegisterClient(),
+                customerProperties.getContractId()
+        );
+    }
+
+    @Bean
+    @Profile("get-data-and-confirm-deliveries-demo")
+    public CommandLineRunner getDataAndConfirmDeliveriesRunner() {
+        return new GetDataAndConfirmDeliveriesRunner(
+                xfcdClient(),
+                customerProperties.getContractId()
+        );
+    }
+
+    @Bean
+    @Profile("get-data-and-confirm-deliveries-recursive-demo")
+    public CommandLineRunner getDataAndConfirmDeliveriesRecursiveRunner() {
+        return new GetDataAndConfirmDeliveriesRecursiveRunner(
+                xfcdClient(),
                 customerProperties.getContractId()
         );
     }
@@ -91,11 +115,12 @@ public class RestClientDemoConfig {
                     .withCoreSize(1);
 
             HystrixCommandProperties.Setter commandProperties = HystrixCommandProperties.Setter()
+                    .withRequestLogEnabled(true)
                     .withFallbackEnabled(false)
                     .withExecutionTimeoutEnabled(true)
                     .withExecutionTimeoutInMilliseconds((int) SECONDS.toMillis(45))
                     .withExecutionIsolationStrategy(SEMAPHORE)
-                    .withExecutionIsolationSemaphoreMaxConcurrentRequests(1);
+                    .withExecutionIsolationSemaphoreMaxConcurrentRequests(20);
 
             return HystrixCommand.Setter
                     .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupKey))
