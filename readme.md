@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/amvnetworks/amv-trafficsoft-restclient-demo.svg?branch=master)](https://travis-ci.org/amvnetworks/amv-trafficsoft-restclient-demo)
+[![License](https://img.shields.io/github/license/amvnetworks/amv-trafficsoft-restclient-demo.svg?maxAge=2592000)](https://github.com/amvnetworks/amv-trafficsoft-restclient-demo/blob/master/LICENSE)
 
 amv-trafficsoft-restclient-demo
 ========
@@ -127,3 +128,8 @@ Example output:
 [main] INFO AllSeriesAndModelsOfOemRunner - Completed.
 [main] INFO AllSeriesAndModelsOfOemRunner - ==================================================
 ```
+
+
+
+# license
+The project is licensed under the Apache License. See [LICENSE](LICENSE) for details.
