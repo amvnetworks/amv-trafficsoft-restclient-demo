@@ -84,7 +84,8 @@ public class GetDataAndConfirmDeliveriesRecursiveRunner implements CommandLineRu
                 log.info("Amount of nodes: {} ", amountOfNodes);
                 log.info("First Node: {}", firstNodeOrNull);
 
-                getDataAndConfirmDeliveriesWithDelay(deliveryIds, delay, delayTimeUnit)
+                getDataAndConfirmDeliveries(deliveryIds)
+                        .delay(delay, delayTimeUnit)
                         .subscribe(this, onError, onComplete);
             }
         };
@@ -92,20 +93,20 @@ public class GetDataAndConfirmDeliveriesRecursiveRunner implements CommandLineRu
 
         log.info("==================================================");
         List<Long> deliveryIds = Collections.emptyList();
-        getDataAndConfirmDeliveriesWithDelay(deliveryIds, delay, delayTimeUnit)
+        getDataAndConfirmDeliveries(deliveryIds)
+                .delay(delay, delayTimeUnit)
                 .subscribe(onNext, onError, onComplete);
 
         latch.await();
         log.info("==================================================");
     }
 
-    private Observable<List<DeliveryRestDto>> getDataAndConfirmDeliveriesWithDelay(List<Long> deliveryIds, long delay, TimeUnit delayTimeUnit) {
+    private Observable<List<DeliveryRestDto>> getDataAndConfirmDeliveries(List<Long> deliveryIds) {
         Scheduler sameThreadExecutor = Schedulers.immediate();
 
         return this.xfcdClient.getDataAndConfirmDeliveries(this.contractId, deliveryIds)
                 .toObservable()
                 .observeOn(sameThreadExecutor)
-                .delay(delay, delayTimeUnit)
                 .subscribeOn(sameThreadExecutor);
     }
 }
