@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.amv.trafficsoft:amv-trafficsoft-rest-client:0.0.4'
+    compile 'org.amv.trafficsoft:amv-trafficsoft-rest-client:0.0.5'
     compile('org.springframework.boot:spring-boot-starter:2.0.0.BUILD-SNAPSHOT') {
         exclude module: 'spring-boot-starter-logging'
     }
@@ -48,6 +48,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.16.16'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test:2.0.0.BUILD-SNAPSHOT'
+}
+
+bootRun {
+    systemProperties = project.gradle.startParameter.systemPropertiesArgs
 }
 
 lombok {
@@ -66,8 +70,4 @@ task delombok(type: DelombokTask, dependsOn: compileJava) {
 
 task delombokHelp(type: DelombokTask) {
     args '--help'
-}
-
-bootRun {
-    systemProperties = project.gradle.startParameter.systemPropertiesArgs;
 }
