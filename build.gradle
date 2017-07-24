@@ -33,7 +33,7 @@ targetCompatibility = 1.8
 repositories {
     jcenter()
     maven {
-        url  'https://dl.bintray.com/amvnetworks/amv-trafficsoft-rest'
+        url 'https://dl.bintray.com/amvnetworks/amv-trafficsoft-rest'
     }
     maven {
         url 'https://repo.spring.io/libs-snapshot'
@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.amv.trafficsoft:amv-trafficsoft-rest-client-spring-boot-starter:0.0.8'
+    compile('org.amv.trafficsoft:amv-trafficsoft-rest-client-spring-boot-starter:0.0.8')
     compile('org.springframework.boot:spring-boot-starter') {
         exclude module: 'spring-boot-starter-logging'
     }
@@ -50,7 +50,9 @@ dependencies {
     compile 'com.google.guava:guava:21.0'
     compileOnly 'org.projectlombok:lombok:1.16.16'
 
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile('org.springframework.boot:spring-boot-starter-test') {
+        exclude module: 'spring-boot-starter-logging'
+    }
 }
 
 bootRun {
