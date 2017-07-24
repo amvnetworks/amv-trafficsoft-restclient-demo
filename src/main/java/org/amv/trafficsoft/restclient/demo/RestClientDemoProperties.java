@@ -6,11 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 
 @Data
-@ConfigurationProperties(prefix = "customer")
-public class CustomerProperties {
-    private String baseUrl;
-    private String username;
-    private String password;
-    private long contractId;
+@ConfigurationProperties(prefix = "amv.trafficsoft.restclient.demo")
+public class RestClientDemoProperties {
     private List<Long> vehicleIds;
 }

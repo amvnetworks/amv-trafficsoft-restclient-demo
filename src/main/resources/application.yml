@@ -1,11 +1,14 @@
 spring.application.name: 'amv-trafficsoft-restclient-demo'
 spring.profiles.active: demo
 
-customer:
-  baseUrl: 'https://www.example.com'
-  username: 'john_doe'
-  password: 'mysupersecretpassword'
-  contractId: 0
+amv.trafficsoft.api:
+  rest:
+    baseUrl: 'https://www.example.com'
+    username: 'john_doe'
+    password: 'mysupersecretpassword'
+    contractId: 0
+
+amv.trafficsoft.restclient.demo:
   vehicleIds:
     - 0
     - 1

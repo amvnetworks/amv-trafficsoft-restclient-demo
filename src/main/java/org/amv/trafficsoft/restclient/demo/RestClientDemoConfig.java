@@ -3,10 +3,8 @@ package org.amv.trafficsoft.restclient.demo;
 import com.netflix.hystrix.*;
 import feign.Feign;
 import feign.hystrix.SetterFactory;
-import org.amv.trafficsoft.rest.client.ClientConfig;
-import org.amv.trafficsoft.rest.client.ClientConfig.ConfigurableClientConfig;
-import org.amv.trafficsoft.rest.client.TrafficsoftClients;
 import org.amv.trafficsoft.rest.client.asgregister.AsgRegisterClient;
+import org.amv.trafficsoft.rest.client.autoconfigure.TrafficsoftApiRestProperties;
 import org.amv.trafficsoft.rest.client.xfcd.XfcdClient;
 import org.amv.trafficsoft.restclient.demo.command.AllSeriesAndModelsOfOemRunner;
 import org.amv.trafficsoft.restclient.demo.command.GetDataAndConfirmDeliveriesRecursiveRunner;
@@ -20,92 +18,61 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import static com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE;
-import static com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy.THREAD;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Configuration
-@EnableConfigurationProperties(CustomerProperties.class)
+@EnableConfigurationProperties(RestClientDemoProperties.class)
 public class RestClientDemoConfig {
 
-    private final CustomerProperties customerProperties;
+    private final TrafficsoftApiRestProperties trafficsoftApiRestProperties;
+    private final RestClientDemoProperties restClientDemoProperties;
 
     @Autowired
-    public RestClientDemoConfig(CustomerProperties customerProperties) {
-        this.customerProperties = requireNonNull(customerProperties);
+    public RestClientDemoConfig(TrafficsoftApiRestProperties trafficsoftApiRestProperties,
+                                RestClientDemoProperties restClientDemoProperties) {
+        this.trafficsoftApiRestProperties = requireNonNull(trafficsoftApiRestProperties);
+        this.restClientDemoProperties = requireNonNull(restClientDemoProperties);
     }
 
     @Bean
     @Profile("get-last-data-demo")
-    public CommandLineRunner lastDataRunner() {
+    public CommandLineRunner lastDataRunner(XfcdClient xfcdClient) {
         return new LastDataRunner(
-                xfcdClient(),
-                customerProperties.getContractId(),
-                customerProperties.getVehicleIds()
+                xfcdClient,
+                trafficsoftApiRestProperties.getContractId(),
+                restClientDemoProperties.getVehicleIds()
         );
     }
 
     @Bean
     @Profile("get-oems-demo")
-    public CommandLineRunner allSeriesAndModelsOfOemRunner() {
+    public CommandLineRunner allSeriesAndModelsOfOemRunner(AsgRegisterClient asgRegisterClient) {
         return new AllSeriesAndModelsOfOemRunner(
-                asgRegisterClient(),
-                customerProperties.getContractId()
+                asgRegisterClient,
+                trafficsoftApiRestProperties.getContractId()
         );
     }
 
     @Bean
     @Profile("get-data-and-confirm-deliveries-demo")
-    public CommandLineRunner getDataAndConfirmDeliveriesRunner() {
+    public CommandLineRunner getDataAndConfirmDeliveriesRunner(XfcdClient xfcdClient) {
         return new GetDataAndConfirmDeliveriesRunner(
-                xfcdClient(),
-                customerProperties.getContractId()
+                xfcdClient,
+                trafficsoftApiRestProperties.getContractId()
         );
     }
 
     @Bean
     @Profile("get-data-and-confirm-deliveries-recursive-demo")
-    public CommandLineRunner getDataAndConfirmDeliveriesRecursiveRunner() {
+    public CommandLineRunner getDataAndConfirmDeliveriesRecursiveRunner(XfcdClient xfcdClient) {
         return new GetDataAndConfirmDeliveriesRecursiveRunner(
-                xfcdClient(),
-                customerProperties.getContractId()
+                xfcdClient,
+                trafficsoftApiRestProperties.getContractId()
         );
     }
 
-    @Bean
-    public AsgRegisterClient asgRegisterClient() {
-        return TrafficsoftClients.asgRegister(asgRegisterClientConfig());
-    }
-
-    @Bean
-    public XfcdClient xfcdClient() {
-        return TrafficsoftClients.xfcd(xfcdClientConfig());
-    }
-
-    @Bean
-    public ClientConfig.BasicAuth basicAuth() {
-        return ClientConfig.BasicAuthImpl.builder()
-                .username(customerProperties.getUsername())
-                .password(customerProperties.getPassword())
-                .build();
-    }
-
-
-    @Bean
-    public ConfigurableClientConfig<AsgRegisterClient> asgRegisterClientConfig() {
-        return TrafficsoftClients.config(AsgRegisterClient.class, this.customerProperties.getBaseUrl(), basicAuth())
-                .setterFactory(setterFactory())
-                .build();
-    }
-
-    @Bean
-    public ConfigurableClientConfig<XfcdClient> xfcdClientConfig() {
-        return TrafficsoftClients.config(XfcdClient.class, this.customerProperties.getBaseUrl(), basicAuth())
-                .setterFactory(setterFactory())
-                .build();
-    }
-
-    @Bean
+    @Bean("trafficsoftApiRestClientSetterFactory")
     public SetterFactory setterFactory() {
         return (target, method) -> {
             String groupKey = target.name();
