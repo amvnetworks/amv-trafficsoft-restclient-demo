@@ -5,11 +5,9 @@ import feign.Feign;
 import feign.hystrix.SetterFactory;
 import org.amv.trafficsoft.rest.client.asgregister.AsgRegisterClient;
 import org.amv.trafficsoft.rest.client.autoconfigure.TrafficsoftApiRestProperties;
+import org.amv.trafficsoft.rest.client.carsharing.whitelist.CarSharingWhitelistClient;
 import org.amv.trafficsoft.rest.client.xfcd.XfcdClient;
-import org.amv.trafficsoft.restclient.demo.command.AllSeriesAndModelsOfOemRunner;
-import org.amv.trafficsoft.restclient.demo.command.GetDataAndConfirmDeliveriesRecursiveRunner;
-import org.amv.trafficsoft.restclient.demo.command.GetDataAndConfirmDeliveriesRunner;
-import org.amv.trafficsoft.restclient.demo.command.LastDataRunner;
+import org.amv.trafficsoft.restclient.demo.command.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,6 +31,16 @@ public class RestClientDemoConfig {
                                 RestClientDemoProperties restClientDemoProperties) {
         this.trafficsoftApiRestProperties = requireNonNull(trafficsoftApiRestProperties);
         this.restClientDemoProperties = requireNonNull(restClientDemoProperties);
+    }
+
+    @Bean
+    @Profile("fetch-whitelist-demo")
+    public CommandLineRunner fetchWhitelistRunner(CarSharingWhitelistClient carSharingWhitelistClient) {
+        return new FetchWhitelistRunner(
+                carSharingWhitelistClient,
+                trafficsoftApiRestProperties.getContractId(),
+                restClientDemoProperties.getVehicleIds()
+        );
     }
 
     @Bean
