@@ -43,7 +43,7 @@ public class LastDataRunner implements CommandLineRunner {
         Scheduler sameThreadExecutor = Schedulers.immediate();
 
         log.info("==================================================");
-        this.xfcdClient.getLastData(this.contractId, this.vehicleIds)
+        this.xfcdClient.getLatestData(this.contractId, this.vehicleIds)
                 .toObservable()
                 .observeOn(sameThreadExecutor)
                 .subscribeOn(sameThreadExecutor)
