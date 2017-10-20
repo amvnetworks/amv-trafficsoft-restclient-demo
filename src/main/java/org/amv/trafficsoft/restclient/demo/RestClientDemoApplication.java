@@ -2,7 +2,6 @@ package org.amv.trafficsoft.restclient.demo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.Banner;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
@@ -13,7 +12,7 @@ public class RestClientDemoApplication {
     public static void main(String[] args) {
         log.info("Starting {} ...", RestClientDemoApplication.class.getSimpleName());
         new SpringApplicationBuilder(RestClientDemoApplication.class)
-                .web(WebApplicationType.NONE)
+                .web(false)
                 .bannerMode(Banner.Mode.CONSOLE)
                 .run(args);
     }
