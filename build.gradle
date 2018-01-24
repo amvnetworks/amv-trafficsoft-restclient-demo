@@ -3,6 +3,7 @@ import io.franzbecker.gradle.lombok.task.DelombokTask
 buildscript {
     ext {
         springBootVersion = '1.5.8.RELEASE'
+        amvTrafficsoftRestVersion = '0.4.0'
     }
     repositories {
         jcenter()
@@ -31,10 +32,11 @@ targetCompatibility = 1.8
 
 repositories {
     jcenter()
+    mavenLocal()
 }
 
 dependencies {
-    compile('org.amv.trafficsoft:amv-trafficsoft-rest-client-spring-boot-starter:0.1.0')
+    compile("org.amv.trafficsoft:amv-trafficsoft-rest-client-spring-boot-starter:${amvTrafficsoftRestVersion}")
     compile('org.springframework.boot:spring-boot-starter') {
         exclude module: 'spring-boot-starter-logging'
     }
